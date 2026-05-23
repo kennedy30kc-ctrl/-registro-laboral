@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro Laboral – Automatiza Pro</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --card: #161920;
+    --border: #252830;
+    --accent: #f97316;
+    --accent2: #fb923c;
+    --text: #f1f3f7;
+    --muted: #7c8094;
+    --success: #22c55e;
+    --error: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .title {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .info-row:last-child { border-bottom: none; }
+
+  .info-label { color: var(--muted); }
+  .info-value { font-weight: 600; color: var(--text); }
+
+  .accion-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .accion-entrada { background: rgba(34,197,94,0.15); color: var(--success); }
+  .accion-salida { background: rgba(239,68,68,0.15); color: var(--error); }
+
+  /* GPS */
+  .gps-block {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(249,115,22,0.08);
+    border: 1px solid rgba(249,115,22,0.2);
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+
+  .gps-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .gps-text { flex: 1; }
+  .gps-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .gps-value { font-size: 12px; color: var(--muted); font-family: monospace; }
+
+  .gps-status {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .gps-waiting { background: rgba(124,128,148,0.2); color: var(--muted); }
+  .gps-ok { background: rgba(34,197,94,0.15); color: var(--success); }
+  .gps-fail { background: rgba(239,68,68,0.15); color: var(--error); }
+
+  /* Foto */
+  .photo-area {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .photo-area:hover { border-color: var(--accent); background: rgba(249,115,22,0.04); }
+  .photo-area.has-photo { border-style: solid; border-color: var(--success); }
+
+  .photo-area input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .photo-preview {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: none;
+  }
+
+  .photo-placeholder { pointer-events: none; }
+  .photo-emoji { font-size: 32px; margin-bottom: 8px; }
+  .photo-hint { font-size: 13px; color: var(--muted); }
+  .photo-hint strong { color: var(--text); }
+
+  /* Botón */
+  .btn-submit {
+    width: 100%;
+    padding: 16px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-submit:hover { background: var(--accent2); transform: translateY(-1px); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* States */
+  .state { display: none; text-align: center; padding: 40px 20px; }
+  .state.active { display: block; }
+
+  .state-icon { font-size: 56px; margin-bottom: 16px; }
+  .state-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .state-msg { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hora-actual {
+    font-size: 28px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    color: var(--accent);
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .fecha-actual {
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- FORM STATE -->
+  <div id="state-form" class="state active">
+
+    <div class="header">
+      <div class="logo">⚡ Automatiza Pro</div>
+      <div class="title">Registro<br>Laboral</div>
+    </div>
+
+    <div id="reloj" class="hora-actual">00:00:00</div>
+    <div id="fecha" class="fecha-actual"></div>
+
+    <div class="card">
+      <div class="section-label">📋 Datos del registro</div>
+      <div class="info-row">
+        <span class="info-label">Empleado</span>
+        <span class="info-value" id="disp-empleado">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Acción</span>
+        <span id="disp-accion">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Proyecto</span>
+        <span class="info-value" id="disp-proyecto">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Dirección</span>
+        <span class="info-value" id="disp-direccion">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Vehículo</span>
+        <span class="info-value" id="disp-vehiculo">—</span>
+      </div>
+    </div>
+
+    <!-- GPS -->
+    <div class="gps-block">
+      <div class="gps-icon">📍</div>
+      <div class="gps-text">
+        <div class="gps-title">Ubicación GPS</div>
+        <div class="gps-value" id="gps-coords">Obteniendo ubicación...</div>
+      </div>
+      <div class="gps-status gps-waiting" id="gps-status">Espera</div>
+    </div>
+
+    <!-- Foto -->
+    <div class="photo-area" id="photo-area">
+      <input type="file" accept="image/*" capture="environment" id="photo-input" onchange="handlePhoto(event)">
+      <div class="photo-placeholder" id="photo-placeholder">
+        <div class="photo-emoji">📸</div>
+        <div class="photo-hint"><strong>Toma una foto</strong> de la obra<br>Es obligatoria para registrar</div>
+      </div>
+      <img class="photo-preview" id="photo-preview" src="" alt="foto">
+    </div>
+
+    <button class="btn-submit" id="btn-submit" onclick="enviar()" disabled>
+      Registrar Ahora
+    </button>
+
+  </div>
+
+  <!-- LOADING STATE -->
+  <div id="state-loading" class="state">
+    <div class="spinner"></div>
+    <div class="state-title">Registrando...</div>
+    <div class="state-msg">Enviando tus datos al sistema.<br>Por favor espera.</div>
+  </div>
+
+  <!-- SUCCESS STATE -->
+  <div id="state-success" class="state">
+    <div class="state-icon">✅</div>
+    <div class="state-title">¡Registro exitoso!</div>
+    <div class="state-msg" id="success-msg">Tu registro fue guardado correctamente.</div>
+  </div>
+
+  <!-- ERROR STATE -->
+  <div id="state-error" class="state">
+    <div class="state-icon">❌</div>
+    <div class="state-title">Error al registrar</div>
+    <div class="state-msg">Hubo un problema al enviar tus datos.<br>Intenta de nuevo.</div>
+    <br>
+    <button class="btn-submit" onclick="showState('form')">Intentar de nuevo</button>
+  </div>
+
+</div>
+
+<script>
+  const WEBHOOK_URL = 'https://automatizapro.app.n8n.cloud/webhook-test/9e785e88-5fed-4681-93a5-0edf8c581319';
+
+  // Leer parámetros URL
+  const params = new URLSearchParams(window.location.search);
+  const datos = {
+    empleado: params.get('empleado') || 'No especificado',
+    accion: params.get('accion') || 'No especificado',
+    proyecto: params.get('proyecto') || 'No especificado',
+    direccion: params.get('direccion') || 'No especificado',
+    vehiculo: params.get('vehiculo') || 'No especificado'
+  };
+
+  let gpsData = null;
+  let photoBase64 = null;
+  let gpsOk = false;
+
+  // Mostrar datos
+  document.getElementById('disp-empleado').textContent = datos.empleado;
+  document.getElementById('disp-proyecto').textContent = datos.proyecto;
+  document.getElementById('disp-direccion').textContent = datos.direccion;
+  document.getElementById('disp-vehiculo').textContent = datos.vehiculo;
+
+  const accionEl = document.getElementById('disp-accion');
+  const accionLower = datos.accion.toLowerCase();
+  accionEl.innerHTML = `<span class="accion-badge ${accionLower.includes('entrada') ? 'accion-entrada' : 'accion-salida'}">${datos.accion}</span>`;
+
+  // Reloj en tiempo real
+  function actualizarReloj() {
+    const ahora = new Date();
+    document.getElementById('reloj').textContent = ahora.toLocaleTimeString('es-ES');
+    const opciones = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+    document.getElementById('fecha').textContent = ahora.toLocaleDateString('es-ES', opciones);
+  }
+  actualizarReloj();
+  setInterval(actualizarReloj, 1000);
+
+  // GPS
+  function obtenerGPS() {
+    if (!navigator.geolocation) {
+      setGPSFail('No disponible en este dispositivo');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        gpsData = { lat: pos.coords.latitude, lng: pos.coords.longitude, precision: pos.coords.accuracy };
+        document.getElementById('gps-coords').textContent = `${gpsData.lat.toFixed(5)}, ${gpsData.lng.toFixed(5)}`;
+        document.getElementById('gps-status').textContent = '✓ OK';
+        document.getElementById('gps-status').className = 'gps-status gps-ok';
+        gpsOk = true;
+        checkReady();
+      },
+      function(err) {
+        setGPSFail('Permiso denegado');
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  }
+
+  function setGPSFail(msg) {
+    document.getElementById('gps-coords').textContent = msg;
+    document.getElementById('gps-status').textContent = '✗ Error';
+    document.getElementById('gps-status').className = 'gps-status gps-fail';
+    gpsOk = false;
+    checkReady();
+  }
+
+  // Foto
+  function handlePhoto(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      photoBase64 = ev.target.result;
+      document.getElementById('photo-preview').src = photoBase64;
+      document.getElementById('photo-preview').style.display = 'block';
+      document.getElementById('photo-placeholder').style.display = 'none';
+      document.getElementById('photo-area').classList.add('has-photo');
+      checkReady();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function checkReady() {
+    const ready = photoBase64 !== null;
+    document.getElementById('btn-submit').disabled = !ready;
+  }
+
+  function showState(s) {
+    document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
+    document.getElementById('state-' + s).classList.add('active');
+  }
+
+  // Enviar
+  async function enviar() {
+    showState('loading');
+    const ahora = new Date();
+    const payload = {
+      empleado: datos.empleado,
+      accion: datos.accion,
+      proyecto: datos.proyecto,
+      direccion: datos.direccion,
+      vehiculo: datos.vehiculo,
+      latitud: gpsOk ? gpsData.lat : 'no disponible',
+      longitud: gpsOk ? gpsData.lng : 'no disponible',
+      precision_gps: gpsOk ? gpsData.precision : null,
+      hora_registro: ahora.toLocaleTimeString('es-ES'),
+      fecha_registro: ahora.toLocaleDateString('es-ES'),
+      timestamp: ahora.toISOString(),
+      foto: photoBase64
+    };
+
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        document.getElementById('success-msg').innerHTML =
+          `<strong>${datos.empleado}</strong> — ${datos.accion} registrada<br>
+           📅 ${payload.fecha_registro} • ⏰ ${payload.hora_registro}<br>
+           ${gpsOk ? '📍 Ubicación verificada' : '⚠️ Sin GPS'}`;
+        showState('success');
+      } else {
+        showState('error');
+      }
+    } catch (err) {
+      showState('error');
+    }
+  }
+
+  // Iniciar GPS automáticamente
+  obtenerGPS();
+</script>
+</body>
+</html>
